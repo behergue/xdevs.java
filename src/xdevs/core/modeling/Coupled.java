@@ -103,6 +103,27 @@ public class Coupled extends Component {
         return false;
     }
 
+    /**
+     * Whether this coupled model, or any nested coupled model, defines a structural
+     * transition function (i.e., overrides {@link #structuralTransition()}).
+     * @return true if the model has dynamic structure
+     */
+    public boolean isDynamic() {
+        try {
+            if (this.getClass().getMethod("structuralTransition").getDeclaringClass() != Coupled.class) {
+                return true;
+            }
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+        for (Component component : components) {
+            if (component instanceof Coupled && ((Coupled) component).isDynamic()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * This method is called by the simulator right after the simulation ends.
@@ -337,6 +358,11 @@ public class Coupled extends Component {
      * @return this, as the coupled model after the flattening.
      */
     public Coupled flatten() {
+        if (this.isDynamic()) {
+            throw new IllegalStateException("Coupled model " + name
+                    + " overrides structuralTransition(): dynamic structure models cannot be flattened, "
+                    + "because flattening removes the coupled models that own the structural transition functions.");
+        }
         List<Coupled> toFlatten = new ArrayList<>();
         for (Component component : components) {
             if (component instanceof Coupled) {

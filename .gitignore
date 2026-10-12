@@ -20,3 +20,8 @@ out/
 nb-configuration.xml
 nbactions.xml
 licenseheader.txt
+
+# build output of the dyndevs-paper experiments
+out/
+out2/
+tmp/

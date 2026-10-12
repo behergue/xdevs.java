@@ -43,6 +43,8 @@ public class Factory extends Coupled {
     protected double processingTime;
     protected Transducer transducer;
     protected int maxMachines;
+    /** Monotonic counter to give every machine a unique name, even after removals. */
+    protected int nextMachineId = 1;
 
     /**
      * Constructor
@@ -103,7 +105,7 @@ public class Factory extends Coupled {
             }
         }
         if (numIdle==0 && machines.size()<maxMachines) {
-            Machine machine = new Machine("machine-" + machines.size(), processingTime);
+            Machine machine = new Machine("machine-" + (nextMachineId++), processingTime);
             super.addComponent(machine);
             Machine prevMachine = machines.get(machines.size()-1);
             super.addCoupling(prevMachine.oJobIgnored, machine.iJob);
